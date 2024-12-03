@@ -26,6 +26,8 @@ string CombineStrings(List<string> fileLines){
         sb.AppendLine(line);
     }
     return sb.ToString();
+    //might be better to use string.Join() when you have a array of string ready
+    // return string.Join(Environment.NewLine, fileLines);
 }
 
 int CalculateSumFromLine(string line){
@@ -36,18 +38,23 @@ int CalculateSumFromLine(string line){
         string digitspattern = @"\d{1,3}";
         List<int> numbers = Regex.Matches(match.ToString(), digitspattern).Select(i => Convert.ToInt32(i.ToString())).ToList();
         sum += numbers[0] * numbers[1];
+
+        //alternative
+        //int num1 = int.Parse(match.Groups[1].Value);
+        //int num2 = int.Parse(match.Groups[2].Value);
+        //sum += num1 * num2;
     }
     
     return sum;
 }
 
 string PreprocessLine(string line){
-    
+    //consider using stringbuilder
     int start = 0;
     bool enabled = true;
+    string processedLine = "";
     int index = line.IndexOf("don't()");
 
-    string processedLine = "";
     while(index != -1)
     {
         if(enabled){
@@ -69,8 +76,7 @@ string PreprocessLine(string line){
         start = index + 1;
         enabled = true;
     }
-
-   return processedLine;
+    return processedLine;
 }
 
 List<string> ReadFileLines(string inputFile){
