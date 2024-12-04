@@ -1,7 +1,4 @@
 ﻿
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
-
 // string inputFilePath = "./example.txt";
 string inputFilePath = "./input.txt";
 
