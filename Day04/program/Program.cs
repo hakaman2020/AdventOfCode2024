@@ -27,17 +27,17 @@ int Task1(List<string> puzzle){
 }
 
 int Task2(List<string> puzzle){
-     int height = puzzle.Count;
+    
+    int height = puzzle.Count;
     int width = puzzle[0].Length;
-    int totalcount = 0
+    int totalcount = 0;
 
-     for(int row = 0; row < height; row++){
-        for(int column = 0; column < width; column++){
-            if(puzzle[row][column] == 'M')
-                totalcount += countXDashMAS(row, column, height, width, puzzle);    
+     for(int row = 0; row < height - 2; row++){
+        for(int column = 0; column < width - 2; column++){
+            totalcount += countXDashMAS(row, column, height, width, puzzle);
         }
     }
-    return 0;
+    return totalcount;
 }
 
 List<string> ReadFileLines(string inputFile){
@@ -108,5 +108,29 @@ int countXmas(int row, int column, int height, int width, List<string> puzzle){
 }
 
 int countXDashMAS(int row, int column, int width, int height, List<string> puzzle){
-    return 0;
+
+    int count = 0;
+
+    if(     puzzle[row][column] == 'M' && puzzle[row][column + 2] == 'M'
+                    && puzzle[row + 1][column + 1] == 'A'
+        &&  puzzle[row + 2][column] == 'S' && puzzle[row + 2][column + 2] == 'S'){
+            count++;
+    }
+    if(     puzzle[row][column] == 'M' && puzzle[row][column + 2] == 'S'
+                    && puzzle[row + 1][column + 1] == 'A'
+        &&  puzzle[row + 2][column] == 'M' && puzzle[row + 2][column + 2] == 'S'){
+            count++;
+    }
+    if(     puzzle[row][column] == 'S' && puzzle[row][column + 2] == 'M'
+                    && puzzle[row + 1][column + 1] == 'A'
+        &&  puzzle[row + 2][column] == 'S' && puzzle[row + 2][column + 2] == 'M'){
+            count++;
+    }
+    if(     puzzle[row][column] == 'S' && puzzle[row][column + 2] == 'S'
+                    && puzzle[row + 1][column + 1] == 'A'
+        &&  puzzle[row + 2][column] == 'M' && puzzle[row + 2][column + 2] == 'M'){
+            count++;
+    }
+   
+    return count;
 }
