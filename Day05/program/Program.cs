@@ -1,4 +1,6 @@
 ﻿
+using System.Security;
+
 string inputFilePath = "./example.txt";
 //string inputFilePath = "./input.txt";
 
@@ -18,3 +20,20 @@ int Task2(){
 List<string> ReadFileLines(string inputFile){
     return File.ReadLines(inputFile).ToList();
 }
+
+void SeperateList(List<string> inputLines, Dictionary<int,HashSet<int>> rules, List<List<int>> updates){
+    bool endrules = false;
+    foreach (string line in inputLines){
+        if(line == string.Empty){
+            endrules = true;
+            continue;
+        }
+        if(!endrules){
+            
+            rules.ContainsKey()
+            rules.
+            continue;   
+        }
+
+    }
+} 
