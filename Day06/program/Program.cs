@@ -2,33 +2,27 @@
 string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
-
-Console.WriteLine($"Result of Task 1 is {Task1(fileLines)}");
-Console.WriteLine($"Result of Task 2 is {Task2(fileLines)}");
-
-int Task1(List<string> map){
     
-    (int, int) positionYX = FindGuard(map);
-    if (positionYX.Item1 == -1){
-        Console.WriteLine("No guard found");
-        return 0;
-    }
+(int, int) guardPositionYX = FindGuard(fileLines);
+if (guardPositionYX.Item1 == -1){
+    Console.WriteLine("No guard found");
+    return;
+}
 
+Console.WriteLine($"Result of Task 1 is {Task1(fileLines, guardPositionYX)}");
+Console.WriteLine($"Result of Task 2 is {Task2(fileLines, guardPositionYX)}");
+
+int Task1(List<string> map, (int, int) guardPositionYX ){
+    
     List<char[]> convertedMap = ConvertMap(map);
-    SimulateMovementGuardAndDoesItLoop(convertedMap, positionYX.Item1, positionYX.Item2);
+    SimulateMovementGuardAndDoesItLoop(convertedMap, guardPositionYX.Item1, guardPositionYX.Item2);
     int totalDistinctPositions = CountDistinctPositions(convertedMap);
 
     return totalDistinctPositions;
 }
 
-int Task2(List<string> map){
-    
-    (int, int) positionYX = FindGuard(map);
-    if (positionYX.Item1 == -1){
-        Console.WriteLine("No guard found");
-        return 0;
-    }
-    
+int Task2(List<string> map, (int, int) guardPositionYx){
+
     List<char[]> convertedMap = ConvertMap(map);
     int amountPositionsOfObstructions = 0;
 
@@ -36,7 +30,7 @@ int Task2(List<string> map){
         for(int x = 0; x < convertedMap[0].Length; x ++){
             if(convertedMap[y][x] == '#') continue;
             convertedMap[y][x] = 'O';
-            if(SimulateMovementGuardAndDoesItLoop(convertedMap, positionYX.Item1, positionYX.Item2)){
+            if(SimulateMovementGuardAndDoesItLoop(convertedMap, guardPositionYx.Item1, guardPositionYx.Item2)){
                 amountPositionsOfObstructions++;
             }
             convertedMap[y][x] = '.';
@@ -101,6 +95,15 @@ ObstacleHitReg ConvertToObstacleHitReg((int,int) movementVectorYX){
         default:
             return ObstacleHitReg.None;
     }
+    // you can use switch expressions
+    // return movementVectorYX switch
+    // {
+    //     (-1, _) => ObstacleHitReg.Bottom,
+    //     (_, 1) => ObstacleHitReg.Left,
+    //     (1, _) => ObstacleHitReg.Top,
+    //     (_, -1) => ObstacleHitReg.Right,
+    //     _ => ObstacleHitReg.None,
+    // };
 }
 
 (int, int) NextMovementVector((int, int) movementVectorYX){
@@ -118,6 +121,15 @@ ObstacleHitReg ConvertToObstacleHitReg((int,int) movementVectorYX){
         default:
             return (0, 0);
     }
+    //you can also use switch expressions
+    // return movementVectorYX switch
+    // {
+    //     (-1, _) => (0, 1),
+    //     (_, 1) => (1, 0),
+    //     (1, _) => (0, -1),
+    //     (_, -1) => (-1, 0),
+    //     _ => (0, 0),
+    // };
 }
 
 int CountDistinctPositions(List<char[]> map){
@@ -126,6 +138,8 @@ int CountDistinctPositions(List<char[]> map){
         count += row.Count(x => x == 'X');
     }
     return count;
+    //using Linq this can be shorter
+    //return map.Sum(row => row.Count(x => x == 'X'));
 }
 
 (int,int) FindGuard(List<string> map){
