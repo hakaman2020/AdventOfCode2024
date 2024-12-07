@@ -1,6 +1,6 @@
 ﻿
-string inputFilePath = "./example.txt";
-// string inputFilePath = "./input.txt";
+// string inputFilePath = "./example.txt";
+string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
 
@@ -8,22 +8,6 @@ Dictionary<int,HashSet<int>>rules = new();
 List<List<int>> updates = new();
 
 SeperateSections(fileLines, rules, updates);
-
-// //print the rules
-Console.WriteLine("\nRules");
-foreach(var set in rules){
-    Console.Write(set.Key +  "|");
-    var test= set.Value.ToList();
-    test.ForEach(x => Console.Write(x + " "));
-    Console.WriteLine();
-}
-
-// //print the updates
-// Console.WriteLine("\nUpdates");
-// foreach(List<int> update in updates){
-//     update.ForEach(x => Console.Write(x + ","));
-//     Console.WriteLine();
-// }
 
 (int sumTask1, List<List<int>> wrongUpdates) = Task1(rules,updates);
 
@@ -49,13 +33,15 @@ Console.WriteLine($"Result of Task 2 is {Task2(rules, wrongUpdates)}");
 }
 
 int Task2(Dictionary<int, HashSet<int>> rules, List<List<int>> updates){
-
-    Console.WriteLine("Wrong Updates");
+    
+    int sum = 0;
+    
     foreach(List<int> update in updates){
-        update.ForEach(x => Console.Write(x + ","));
-        Console.WriteLine();
+        List<int> sortedUpdate = TopologicalSortUpdate(rules, update);
+        sum += sortedUpdate[sortedUpdate.Count/2];
     }
-    return 0;
+    
+    return sum;
 }
 
 List<int> TopologicalSortUpdate(Dictionary<int, HashSet<int>> rules, List<int> update){
@@ -65,11 +51,42 @@ List<int> TopologicalSortUpdate(Dictionary<int, HashSet<int>> rules, List<int> u
     //remove those numbers from the numbers that are the dependant on numbers that where added to the queue
     //repeat until no numbers are left
 
-    
-    //count dependencies
+    List<int> sortedList = new();
+    List<int> numbersToBeRemoved = new();
+
     while(update.Count > 0){
-        
+        numbersToBeRemoved.Clear();
+
+        for(int i = 0; i < update.Count; i++){
+            int checkingNumber = update[i];
+            int amountDependencies = CountDependencies(rules, update, checkingNumber);
+            if(amountDependencies == 0){
+                numbersToBeRemoved.Add(checkingNumber);
+            }
+        }
+
+        foreach(int number in numbersToBeRemoved){
+            update.Remove(number);
+            sortedList.Add(number);
+        }
     }
+
+    sortedList.Reverse();
+    return sortedList;
+}
+
+int CountDependencies(Dictionary<int, HashSet<int>> rules,List<int> update, int number){
+
+    int count = 0;
+
+    if(!rules.ContainsKey(number))return 0;
+    for( int i = 0; i < update.Count; i++){
+        if(rules[number].Contains(update[i])){
+            count++;
+        }
+    }
+    
+    return count;
 }
 
 
