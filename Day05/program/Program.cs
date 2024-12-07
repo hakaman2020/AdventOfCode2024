@@ -45,12 +45,8 @@ int Task2(Dictionary<int, HashSet<int>> rules, List<List<int>> updates){
 }
 
 List<int> TopologicalSortUpdate(Dictionary<int, HashSet<int>> rules, List<int> update){
-    //will use Topological Sorting to sort
-    //start with all the numbers without dependencies
-    //add them to the queue
-    //remove those numbers from the numbers that are the dependant on numbers that where added to the queue
-    //repeat until no numbers are left
-
+    //use Topological Sorting to sort
+    
     List<int> sortedList = new();
     List<int> numbersToBeRemoved = new();
 
