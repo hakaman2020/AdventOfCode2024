@@ -55,37 +55,80 @@ long Task1(List<int> diskMap){
     return checksum;
 }
 
-int Task2(List<int> diskMap){
+long Task2(List<int> diskMap){
     List<BlockGroup> blockGroups = CreateBlockGroupings(diskMap);
 
-    foreach(BlockGroup blockGroup in blockGroups){
-        if(blockGroup.isFile)
-            Console.WriteLine($"File {blockGroup.FileID} {blockGroup.size}");
-        else
-            Console.WriteLine($"Free {blockGroup.size}");
-    }
-
+    // foreach(BlockGroup blockGroup in blockGroups){
+    //     if(blockGroup.IsFile)
+    //         Console.WriteLine($"File {blockGroup.FileID} {blockGroup.Size}");
+    //     else
+    //         Console.WriteLine($"Free {blockGroup.Size}");
+    // }
+PrintBlockGroups(blockGroups);
     for(int i = blockGroups.Count - 1; i>=0; i--){
-        if(blockGroups[i].isFile){
-            int freespaceBlockIndex = FindFreeSpace(blockGroups,blockGroups[i].size, i);
-            if(freespaceBlockIndex == -1) continue;
-
-            int sizeDifference = blockGroups[freespaceBlockIndex].size - blockGroups[i].size; 
+        BlockGroup currentBlockGroup = blockGroups[i];
+        if(currentBlockGroup.IsFile){
+            int freespaceBlockIndex = FindFreeSpace(blockGroups,currentBlockGroup.Size, i);
+            
+            if(freespaceBlockIndex == -1) 
+                continue;
+            
+            int sizeDifference = blockGroups[freespaceBlockIndex].Size - currentBlockGroup.Size;
+            int fileID = currentBlockGroup.FileID;
+            int fileSize = currentBlockGroup.Size;
             if(sizeDifference != 0 ){
-                blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){isFile = false, size = sizeDifference});
-                blockGroups.Insert(freespaceBlockIndex, )
+                blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = false, Size = sizeDifference});
+                blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = true, FileID = fileID, Size = fileSize});
+                blockGroups.RemoveAt(i + 2);
+                currentBlockGroup.IsFile = false;
+                i++;
             }
-
+            else{
+                blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = true, FileID = fileID, Size = fileSize});
+                blockGroups.RemoveAt(i + 1);
+                currentBlockGroup.IsFile = false;
+            }
         }
+        PrintBlockGroups(blockGroups);
     }
 
-
-
-    return 0;
+//    PrintBlockGroups(blockGroups);
+    long checksum = CalculateChecksum(blockGroups);
+    return checksum;
 }
 
+void PrintBlockGroups(List<BlockGroup> blockGroups){
+    foreach(BlockGroup bg in blockGroups){
+        for(int i = 0; i < bg.Size; i++){
+            if(bg.IsFile)
+                Console.Write(bg.FileID);
+            else
+                Console.Write(".");
+        }
+    } 
+    Console.WriteLine();   
+}
+long CalculateChecksum(List<BlockGroup> blockGroups){
+    int currentBlockIndex = 0;
+    long checksum = 0;
+    foreach(BlockGroup bg in blockGroups){
+        if(!bg.IsFile) continue;
+        for(int i = 0; i < bg.Size; i++){
+            checksum += currentBlockIndex * bg.FileID;
+            currentBlockIndex++;
+        }
+    }
+    return checksum;
+}
+
+
+
 int FindFreeSpace(List<BlockGroup> blockGroups, int fileBlocks, int fileIndex){
-    for(int i = 0; i < fileIndex;)
+    for(int i = 0; i < fileIndex;i++){
+        if(!blockGroups[i].IsFile && blockGroups[i].Size >= fileBlocks)
+            return i;
+    }
+    return -1;
 }
 
 
@@ -99,7 +142,7 @@ List<BlockGroup> CreateBlockGroupings(List<int> diskMap){
             isFile = !isFile;
             continue;
         }
-        BlockGroup blockGroup = new BlockGroup(){isFile = isFile, FileID = currentFileId, size = number };
+        BlockGroup blockGroup = new BlockGroup(){IsFile = isFile, FileID = currentFileId, Size = number };
         blockGroupings.Add(blockGroup);
         if(isFile){
             currentFileId++;
@@ -124,7 +167,8 @@ List<string> ReadFileLines(string inputFile){
 }
 
 public class BlockGroup{
-    public bool isFile {get; set;}
+    public bool IsFile {get; set;}
     public int FileID {get; set;}
-    public int size{get;set;}
+    public int Size{get;set;}
+    public bool Evaluated{get; set;} = false;
 }
