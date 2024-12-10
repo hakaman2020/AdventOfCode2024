@@ -1,6 +1,6 @@
 ﻿
-string inputFilePath = "./example.txt";
-// string inputFilePath = "./input.txt";
+// string inputFilePath = "./example.txt";
+string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
 
@@ -64,7 +64,7 @@ long Task2(List<int> diskMap){
     //     else
     //         Console.WriteLine($"Free {blockGroup.Size}");
     // }
-PrintBlockGroups(blockGroups);
+//PrintBlockGroups(blockGroups);
     for(int i = blockGroups.Count - 1; i>=0; i--){
         BlockGroup currentBlockGroup = blockGroups[i];
         if(currentBlockGroup.IsFile){
@@ -79,17 +79,17 @@ PrintBlockGroups(blockGroups);
             if(sizeDifference != 0 ){
                 blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = false, Size = sizeDifference});
                 blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = true, FileID = fileID, Size = fileSize});
-                blockGroups.RemoveAt(i + 2);
+                blockGroups.RemoveAt(freespaceBlockIndex + 2);
                 currentBlockGroup.IsFile = false;
                 i++;
             }
             else{
                 blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = true, FileID = fileID, Size = fileSize});
-                blockGroups.RemoveAt(i + 1);
+                blockGroups.RemoveAt(freespaceBlockIndex + 1);
                 currentBlockGroup.IsFile = false;
             }
         }
-        PrintBlockGroups(blockGroups);
+       // PrintBlockGroups(blockGroups);
     }
 
 //    PrintBlockGroups(blockGroups);
@@ -112,9 +112,9 @@ long CalculateChecksum(List<BlockGroup> blockGroups){
     int currentBlockIndex = 0;
     long checksum = 0;
     foreach(BlockGroup bg in blockGroups){
-        if(!bg.IsFile) continue;
         for(int i = 0; i < bg.Size; i++){
-            checksum += currentBlockIndex * bg.FileID;
+            if(bg.IsFile)
+                checksum += currentBlockIndex * bg.FileID;
             currentBlockIndex++;
         }
     }
@@ -170,5 +170,4 @@ public class BlockGroup{
     public bool IsFile {get; set;}
     public int FileID {get; set;}
     public int Size{get;set;}
-    public bool Evaluated{get; set;} = false;
 }
