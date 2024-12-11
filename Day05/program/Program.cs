@@ -15,7 +15,6 @@ Console.WriteLine($"Result of Task 1 is {sumTask1}");
 Console.WriteLine($"Result of Task 2 is {Task2(rules, wrongUpdates)}");
 
 (int,List<List<int>>) Task1(Dictionary<int,HashSet<int>> rules, List<List<int>> updates){
-
     int sum = 0;
     //keep track of wrong updates for task 2
     List<List<int>> wrongUpdates = new();
@@ -33,7 +32,6 @@ Console.WriteLine($"Result of Task 2 is {Task2(rules, wrongUpdates)}");
 }
 
 int Task2(Dictionary<int, HashSet<int>> rules, List<List<int>> updates){
-    
     int sum = 0;
     
     foreach(List<int> update in updates){
@@ -46,7 +44,6 @@ int Task2(Dictionary<int, HashSet<int>> rules, List<List<int>> updates){
 
 List<int> TopologicalSortUpdate(Dictionary<int, HashSet<int>> rules, List<int> update){
     //use Topological Sorting to sort
-    
     List<int> sortedList = new();
     List<int> numbersToBeRemoved = new();
 
@@ -66,13 +63,12 @@ List<int> TopologicalSortUpdate(Dictionary<int, HashSet<int>> rules, List<int> u
             sortedList.Add(number);
         }
     }
-
     sortedList.Reverse();
+    
     return sortedList;
 }
 
 int CountDependencies(Dictionary<int, HashSet<int>> rules,List<int> update, int number){
-
     int count = 0;
 
     if(!rules.ContainsKey(number))return 0;
@@ -85,9 +81,7 @@ int CountDependencies(Dictionary<int, HashSet<int>> rules,List<int> update, int 
     return count;
 }
 
-
 bool IsUpdateCorrect(Dictionary<int,HashSet<int>> rules, List<int> update){
-
     if(update.Count == 1) return true;
 
     for(int i = 1; i < update.Count; i++){
@@ -110,7 +104,6 @@ List<string> ReadFileLines(string inputFile){
 }
 
 void SeperateSections(List<string> inputLines, Dictionary<int,HashSet<int>> rules, List<List<int>> updates){
-
     bool endrules = false;
 
     foreach (string line in inputLines){
@@ -118,8 +111,10 @@ void SeperateSections(List<string> inputLines, Dictionary<int,HashSet<int>> rule
             endrules = true;
             continue;
         }
+
         if(!endrules){
             List<int> rule = line.Split('|').Select(n => int.Parse(n)).ToList();
+            
             if(rules.ContainsKey(rule[0]))
                 rules[rule[0]].Add(rule[1]);
             else

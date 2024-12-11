@@ -1,5 +1,4 @@
-﻿
-// string inputFilePath = "./example.txt";
+﻿// string inputFilePath = "./example.txt";
 string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
@@ -10,17 +9,13 @@ Console.WriteLine($"Result of Task 1 is {Task1(new List<int>(diskMap))}");
 Console.WriteLine($"Result of Task 2 is {Task2(new List<int>(diskMap))}");
 
 long Task1(List<int> diskMap){
-
     long checksum = 0;
-
     int blockIndex = 0;
-    
     int leftIndex = 0;
     int rightIndex = diskMap.Count - 1;
-    bool freespace = false;
-
     int leftID = 0;
     int rightID = (diskMap.Count / 2) + diskMap.Count % 2 -1;
+    bool freespace = false;
 
     while (leftIndex <= rightIndex){
         if(!freespace){
@@ -52,21 +47,16 @@ long Task1(List<int> diskMap){
         }
         blockIndex++;
     }
+
     return checksum;
 }
 
 long Task2(List<int> diskMap){
     List<BlockGroup> blockGroups = CreateBlockGroupings(diskMap);
 
-    // foreach(BlockGroup blockGroup in blockGroups){
-    //     if(blockGroup.IsFile)
-    //         Console.WriteLine($"File {blockGroup.FileID} {blockGroup.Size}");
-    //     else
-    //         Console.WriteLine($"Free {blockGroup.Size}");
-    // }
-//PrintBlockGroups(blockGroups);
     for(int i = blockGroups.Count - 1; i>=0; i--){
         BlockGroup currentBlockGroup = blockGroups[i];
+       
         if(currentBlockGroup.IsFile){
             int freespaceBlockIndex = FindFreeSpace(blockGroups,currentBlockGroup.Size, i);
             
@@ -76,6 +66,7 @@ long Task2(List<int> diskMap){
             int sizeDifference = blockGroups[freespaceBlockIndex].Size - currentBlockGroup.Size;
             int fileID = currentBlockGroup.FileID;
             int fileSize = currentBlockGroup.Size;
+            
             if(sizeDifference != 0 ){
                 blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = false, Size = sizeDifference});
                 blockGroups.Insert(freespaceBlockIndex, new BlockGroup(){IsFile = true, FileID = fileID, Size = fileSize});
@@ -89,28 +80,17 @@ long Task2(List<int> diskMap){
                 currentBlockGroup.IsFile = false;
             }
         }
-       // PrintBlockGroups(blockGroups);
     }
-
-//    PrintBlockGroups(blockGroups);
+    
     long checksum = CalculateChecksum(blockGroups);
+    
     return checksum;
 }
 
-void PrintBlockGroups(List<BlockGroup> blockGroups){
-    foreach(BlockGroup bg in blockGroups){
-        for(int i = 0; i < bg.Size; i++){
-            if(bg.IsFile)
-                Console.Write(bg.FileID);
-            else
-                Console.Write(".");
-        }
-    } 
-    Console.WriteLine();   
-}
 long CalculateChecksum(List<BlockGroup> blockGroups){
     int currentBlockIndex = 0;
     long checksum = 0;
+
     foreach(BlockGroup bg in blockGroups){
         for(int i = 0; i < bg.Size; i++){
             if(bg.IsFile)
@@ -118,19 +98,18 @@ long CalculateChecksum(List<BlockGroup> blockGroups){
             currentBlockIndex++;
         }
     }
+
     return checksum;
 }
-
-
 
 int FindFreeSpace(List<BlockGroup> blockGroups, int fileBlocks, int fileIndex){
     for(int i = 0; i < fileIndex;i++){
         if(!blockGroups[i].IsFile && blockGroups[i].Size >= fileBlocks)
             return i;
     }
+
     return -1;
 }
-
 
 List<BlockGroup> CreateBlockGroupings(List<int> diskMap){
     List<BlockGroup> blockGroupings = new();
@@ -142,13 +121,16 @@ List<BlockGroup> CreateBlockGroupings(List<int> diskMap){
             isFile = !isFile;
             continue;
         }
+
         BlockGroup blockGroup = new BlockGroup(){IsFile = isFile, FileID = currentFileId, Size = number };
         blockGroupings.Add(blockGroup);
+
         if(isFile){
             currentFileId++;
         }
         isFile = !isFile;
     }
+
     return blockGroupings;
 }
 
@@ -158,6 +140,7 @@ List<int> ConvertToDiskMap(string inputline){
     foreach(char c in inputline){
         diskMap.Add(Convert.ToInt32(c + ""));
     }
+
     return diskMap;
 }
 

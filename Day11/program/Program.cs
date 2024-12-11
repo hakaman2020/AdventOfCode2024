@@ -1,5 +1,4 @@
-﻿
-// string inputFilePath = "./example.txt";
+﻿// string inputFilePath = "./example.txt";
 string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
@@ -23,7 +22,6 @@ long GeneralTask(List<long> stoneNumbers, int amountOfBlinks){
 }
 
 long NextBlink(long stoneNumber, int blinksLeft, Dictionary<(long,int), long> cache){
-
     List<long> stonesNumbers = ApplyRules(stoneNumber);
 
     if(blinksLeft - 1 == 0)
@@ -45,7 +43,6 @@ long NextBlink(long stoneNumber, int blinksLeft, Dictionary<(long,int), long> ca
 }
 
 List<long> ApplyRules(long stoneNumber){
-
     if(stoneNumber == 0){
         return new List<long>(){1};
     }

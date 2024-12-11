@@ -1,5 +1,4 @@
-﻿
-// string inputFilePath = "./example.txt";
+﻿// string inputFilePath = "./example.txt";
 string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
@@ -8,7 +7,6 @@ Console.WriteLine($"Result of Task 1 is {Task1(fileLines)}");
 Console.WriteLine($"Result of Task 2 is {Task2(fileLines)}");
 
 long Task1(List<string> fileLines){
-
     long sum = 0;
 
     foreach(string line in fileLines){
@@ -24,7 +22,6 @@ long Task1(List<string> fileLines){
 }
 
 long Task2(List<string> fileLines){
-
     long sum = 0;
 
     foreach(string line in fileLines){
@@ -44,7 +41,6 @@ List<string> ReadFileLines(string inputFile){
 }
 
 bool IsEquationPossible(long target, List<long> numbers, bool concatOperatorActive){
-
     long result = numbers[0];
 
     if(BuildEquation(target, numbers, 1, result, Operator.Add, concatOperatorActive) 

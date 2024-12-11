@@ -134,6 +134,7 @@ ObstacleHitReg ConvertToObstacleHitReg((int,int) movementVectorYX){
 
 int CountDistinctPositions(List<char[]> map){
     int count = 0;
+
     foreach(char[] row in map){
         count += row.Count(x => x == 'X');
     }
@@ -144,6 +145,7 @@ int CountDistinctPositions(List<char[]> map){
 
 (int,int) FindGuard(List<string> map){
     (int,int) positionYX = (-1,-1);
+
     for(int y = 0; y < map.Count; y++){
         int x = map[y].IndexOf('^');
         if(x != -1){
@@ -152,6 +154,7 @@ int CountDistinctPositions(List<char[]> map){
             return positionYX;
         }
     }
+
     return positionYX;
 }
 

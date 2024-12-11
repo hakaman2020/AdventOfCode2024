@@ -11,7 +11,6 @@ Console.WriteLine($"Result of Task 1 is {Task1(antennas, maxHeight, maxWidth)}")
 Console.WriteLine($"Result of Task 2 is {Task2(antennas, maxHeight, maxWidth)}");
 
 int Task1(Dictionary<char,List<(int,int)>> antennas, int maxHeight, int maxWidth){
-
     HashSet<(int,int)> antiNodesPositions = new();
 
     foreach(var antennaList in antennas){
@@ -35,7 +34,6 @@ int Task1(Dictionary<char,List<(int,int)>> antennas, int maxHeight, int maxWidth
 }
 
 int Task2(Dictionary<char,List<(int,int)>> antennas, int maxHeight, int maxWidth){
-
     HashSet<(int,int)> antiNodesPositions = new();
 
     foreach(var antennaList in antennas){
@@ -54,7 +52,6 @@ int Task2(Dictionary<char,List<(int,int)>> antennas, int maxHeight, int maxWidth
 }
 
 ((int,int),(int,int)) CalculateAntiNodes((int,int) antenna1, (int,int) antenna2){
-
     (int,int) differenceVector = CalculateVector(antenna1, antenna2, '-');
     (int,int) antiNode1 = CalculateVector(antenna1, differenceVector, '+');
     (int,int) antiNode2 = CalculateVector(antenna2, differenceVector,'-');
@@ -63,7 +60,6 @@ int Task2(Dictionary<char,List<(int,int)>> antennas, int maxHeight, int maxWidth
 }
 
 (int,int) CalculateVector((int,int) coord1, (int,int) coord2, char op){
-
     return op switch{
         '+' => (coord1.Item1 + coord2.Item1, coord1.Item2 + coord2.Item2),
         '-' => (coord1.Item1 - coord2.Item1, coord1.Item2 - coord2.Item2),
@@ -72,7 +68,6 @@ int Task2(Dictionary<char,List<(int,int)>> antennas, int maxHeight, int maxWidth
 }
 
 List<(int,int)> CalculateAntiNodesExtended((int,int) antenna1, (int,int) antenna2, int maxHeight, int maxWidth){
-
     List<(int,int)> antiNodesList = new();
     (int,int) differenceVector = CalculateVector(antenna1, antenna2, '-');
     
@@ -83,10 +78,9 @@ List<(int,int)> CalculateAntiNodesExtended((int,int) antenna1, (int,int) antenna
 }
 
 List<(int,int)> CalculateAntiNodesPartial((int,int) antenna, (int,int) differenceVector, int maxHeight, int maxWidth, char op){
-    
     List<(int,int)> antiNodePartialList = new(){antenna};
-
     bool done = false;
+
     for(int i = 1; !done; i++){
         (int,int) antiNode = CalculateVector(antenna, (differenceVector.Item1 * i, differenceVector.Item2 * i), op);
         if((antiNode.Item1 >= 0 && antiNode.Item1 < maxHeight) 
@@ -100,7 +94,6 @@ List<(int,int)> CalculateAntiNodesPartial((int,int) antenna, (int,int) differenc
 }
 
 Dictionary<char, List<(int,int)>> FindAntennas(List<string> map){
-
     Dictionary<char,List<(int,int)>> antennas = new();
 
     for(int y = 0; y < map.Count; y++){

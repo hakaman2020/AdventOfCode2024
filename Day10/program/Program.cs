@@ -3,15 +3,13 @@
 string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
-
 List<List<int>> map = ConvertToIntMap(fileLines);
-
 (int uniqueReachedNineHeightPositions, int sumRating) results = CalculateResults(map);
+
 Console.WriteLine($"Result of Task 1 is {results.uniqueReachedNineHeightPositions}");
 Console.WriteLine($"Result of Task 2 is {results.sumRating}");
 
 (int,int) CalculateResults(List<List<int>> map){
-
     int amountReachableNineHeightPositions = 0;
     int sumRating = 0;
     for(int y = 0; y < map.Count; y++){
@@ -28,7 +26,6 @@ Console.WriteLine($"Result of Task 2 is {results.sumRating}");
 }
 
 (int,int) CalculateReachableNineHeightPositionsAndRatings(List<List<int>> map, int startY, int startX){
-
     Dictionary<string, int> uniqueReachedNineHeightPositions = new();
     
     WalkTrail(map,startY, startX, uniqueReachedNineHeightPositions);
@@ -38,7 +35,6 @@ Console.WriteLine($"Result of Task 2 is {results.sumRating}");
 }
 
 void WalkTrail(List<List<int>> map, int y, int x, Dictionary<string, int> uniqueReachedNineHeightPositions){
-    
     if(map[y][x] == 9){
         string coordString = $"({y},{x})";
         if(uniqueReachedNineHeightPositions.ContainsKey(coordString)){
@@ -57,7 +53,6 @@ void WalkTrail(List<List<int>> map, int y, int x, Dictionary<string, int> unique
 }
 
 List<(int,int)> DetermineWalkableDirections(List<List<int>> map,int y, int x){
-    
     List<(int,int)> availabelDirections = new(){(0,1),(1,0),(0,-1),(-1,0)};
     List<(int,int)> acceptableDirections = new();
     int maxY = map.Count - 1;
