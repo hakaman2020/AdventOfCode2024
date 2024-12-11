@@ -4,11 +4,13 @@ string inputFilePath = "./input.txt";
 List<string> fileLines = ReadFileLines(inputFilePath);
 List<long> stoneNumbers = fileLines[0].Split(' ').Select(n => long.Parse(n)).ToList();
 
-int amountOfBlinksPart1 = 25;
+int amountOfBlinksPart1 = 6;
 int amountOfBlinksPart2 = 75;
 
 Console.WriteLine($"Result of Task 1 is {GeneralTask(stoneNumbers, amountOfBlinksPart1)}");
 Console.WriteLine($"Result of Task 2 is {GeneralTask(stoneNumbers, amountOfBlinksPart2)}");
+Console.WriteLine($"Result of Task 1 with a different approach {CalculateAmountStoneNumbers(stoneNumbers,amountOfBlinksPart1)}");
+Console.WriteLine($"Result of Task 1 with a different approach {CalculateAmountStoneNumbers(stoneNumbers,amountOfBlinksPart2)}");
 
 long GeneralTask(List<long> stoneNumbers, int amountOfBlinks){
     long totalAmountOfStones = 0;
@@ -63,4 +65,48 @@ List<long> ApplyRules(long stoneNumber){
 
 List<string> ReadFileLines(string inputFile){
     return File.ReadLines(inputFile).ToList();
+}
+
+long CalculateAmountStoneNumbers(List<long> stoneNumbers, int amountOfBlinks){
+    Dictionary<long,long> stoneNumbersAmount = new();
+    
+    foreach(var number in stoneNumbers)
+        AddNumber(stoneNumbersAmount, number, 1);
+    for(int i = 0; i < amountOfBlinks; i++)
+        stoneNumbersAmount = Blink(stoneNumbersAmount);
+    long totalAmountOfStones = stoneNumbersAmount.Sum(s => s.Value);
+    
+    return totalAmountOfStones;
+}
+
+Dictionary<long,long> Blink(Dictionary<long,long> stoneNumbers){
+    Dictionary<long,long> temp = new();
+
+    foreach(var number in stoneNumbers){
+        if(number.Key == 0){
+            AddNumber(temp, 1, number.Value);
+            continue;
+        }
+
+        string numberString = number.Key.ToString();
+
+        if(numberString.Length % 2 == 0){
+            long leftNumber = long.Parse(numberString.Substring(0, numberString.Length / 2));
+            long rightNumber = long.Parse(numberString.Substring(numberString.Length / 2));
+           
+            AddNumber(temp, leftNumber, number.Value);
+            AddNumber(temp, rightNumber, number.Value); 
+        }
+        else
+            AddNumber(temp, number.Key * 2024, number.Value);
+    }
+
+    return temp;
+}
+
+void AddNumber(Dictionary<long,long> numbers, long number, long value){
+    if(numbers.ContainsKey(number))
+        numbers[number]+= value;
+    else
+        numbers.Add(number, value); 
 }
