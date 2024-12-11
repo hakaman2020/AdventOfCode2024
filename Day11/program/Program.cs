@@ -7,10 +7,10 @@ List<long> stoneNumbers = fileLines[0].Split(' ').Select(n => long.Parse(n)).ToL
 int amountOfBlinksPart1 = 6;
 int amountOfBlinksPart2 = 75;
 
-Console.WriteLine($"Result of Task 1 is {GeneralTask(stoneNumbers, amountOfBlinksPart1)}");
-Console.WriteLine($"Result of Task 2 is {GeneralTask(stoneNumbers, amountOfBlinksPart2)}");
-Console.WriteLine($"Result of Task 1 with a different approach {CalculateAmountStoneNumbers(stoneNumbers,amountOfBlinksPart1)}");
-Console.WriteLine($"Result of Task 1 with a different approach {CalculateAmountStoneNumbers(stoneNumbers,amountOfBlinksPart2)}");
+Console.WriteLine($"Result of Task 1 with recursion/memoization is {GeneralTask(stoneNumbers, amountOfBlinksPart1)}");
+Console.WriteLine($"Result of Task 2 with recursion/memoization is {GeneralTask(stoneNumbers, amountOfBlinksPart2)}");
+Console.WriteLine($"Result of Task 1 with a dictionary approach is {CalculateAmountStoneNumbers(stoneNumbers,amountOfBlinksPart1)}");
+Console.WriteLine($"Result of Task 2 with a dictionary approach is {CalculateAmountStoneNumbers(stoneNumbers,amountOfBlinksPart2)}");
 
 long GeneralTask(List<long> stoneNumbers, int amountOfBlinks){
     long totalAmountOfStones = 0;
