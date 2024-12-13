@@ -1,26 +1,30 @@
-﻿// string inputFilePath = "./example.txt";
-string inputFilePath = "./input.txt";
+﻿string inputFilePath = "./example.txt";
+// string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
 
-Console.WriteLine($"Result of Task 1 is {Task1(fileLines)}");
-Console.WriteLine($"Result of Task 2 is {Task2()}");
+(long totalPricePerimeter, long totalPriceCorners) result = GeneralTask(fileLines);
 
-long Task1(List<string> map){
+Console.WriteLine($"Result of Task 1 is {result.totalPricePerimeter}");
+Console.WriteLine($"Result of Task 2 is {result.totalPriceCorners}");
+
+(long, long) GeneralTask(List<string> map){
     HashSet<(int,int)> visited = new();
 
-    long totalPrice = 0;
-
+    long totalPricePerimeter = 0;
+    long totalPriceCorners = 0;
     for(int y = 0; y < map.Count; y++){
         for(int x = 0; x < map[0].Length; x++){
             if(visited.Contains((y,x))) continue;
 
-            (int area, int perimeter) result = DetermineRegionAndCalculateAreaAndPerimeter(y,x,map[y][x], map,visited);
-            totalPrice += result.area * result.perimeter;
+            (int area, int perimeter, int corners) result = DetermineRegionAndCalculateAreaAndPerimeter(y,x,map[y][x], map,visited);
+            totalPricePerimeter += result.area * result.perimeter;
+            totalPriceCorners += result.area * result.corners;
+            Console.WriteLine($"{map[y][x]}: {result.area} * {result.corners} = {totalPriceCorners}");
         }
     }
 
-    return totalPrice;
+    return (totalPricePerimeter, totalPriceCorners);
 }
 
 int Task2(){
@@ -29,23 +33,40 @@ int Task2(){
 
 (int area, int perimeter, int corners) DetermineRegionAndCalculateAreaAndPerimeter(int y, int x, char c, List<string> map, HashSet<(int, int)> visited){
 
-    int amountNeighbours = availableDirections(y, x, c, map, visited, false).Count;
+    List<(int y,int x)> directionNeighbours = availableDirections(y, x, c, map, visited, false);
+    int amountNeighbours = directionNeighbours.Count;
     int perimeter = 4 - amountNeighbours;
-    int area = 1;
     int corners = 0;
-    if(perimeter == 2) corners = 1;
-
+    if(perimeter == 2 && !AreTwoDirectionsOppositeOfEachOther(directionNeighbours[0], directionNeighbours[1]))
+        corners = 1;
+    else if (perimeter == 3)
+        corners = 2;
+    else if (perimeter == 4)
+        corners = 4;
+    int area = 1;
+        
     visited.Add((y,x));
     List<(int,int)> directions = availableDirections(y, x, c, map, visited, true);
     foreach((int y, int x) direction in directions){
         if(visited.Contains((y + direction.y, x + direction.x))) continue;
-        (int area, int perimeter) result = DetermineRegionAndCalculateAreaAndPerimeter(y + direction.y, x + direction.x, c, map, visited);
+        (int area, int perimeter, int corners) result = DetermineRegionAndCalculateAreaAndPerimeter(y + direction.y, x + direction.x, c, map, visited);
         area += result.area;
         perimeter += result.perimeter;
+        corners += result.corners;
     }
 
-    return (area, perimeter);
+    return (area, perimeter, corners);
 }
+
+
+
+
+
+bool AreTwoDirectionsOppositeOfEachOther((int y, int x) dir1, (int y, int x) dir2) {
+    if(dir1.x == -dir2.x && dir1.x != 0 && dir2.x !=0) return true;
+    if(dir1.y == -dir2.y && dir1.y != 0 && dir2.y != 0) return true;
+    return false;
+}   
 
 List<(int, int)> availableDirections(int y, int x,char c, List<string> map, HashSet<(int,int)> visited, bool enableVisitedCheck){
     int maxHeight = map.Count;
