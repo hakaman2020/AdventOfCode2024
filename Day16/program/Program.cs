@@ -1,6 +1,4 @@
 ﻿
-using System.Runtime.CompilerServices;
-
 string inputFilePath = "./example.txt";
 //string inputFilePath = "./input.txt";
 
@@ -9,13 +7,20 @@ List<string> fileLines = ReadFileLines(inputFilePath);
 Console.WriteLine($"Result of Task 1 is {Task1(fileLines)}");
 Console.WriteLine($"Result of Task 2 is {Task2()}");
 
-int Task1(List<string> map){
+long Task1(List<string> map){
     (Point startPos, Point endPos)? result = FindStartAndEndPoint(map);
     if (result == null){
         Console.WriteLine("Missing starting point and/or ending point");
         return -1;
     }
+    long lowestScore = SearchPaths(map, result.Value.startPos, result.Value.endPos);
+    return 0;
 }
+
+long SearchPaths(List<string> map, Point startPos, Point endPos){
+    
+}
+
 
 
 
