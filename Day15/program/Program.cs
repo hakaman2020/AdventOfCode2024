@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Runtime.CompilerServices;
 
 string inputFilePath = "./example.txt";
 // string inputFilePath = "./input.txt";
@@ -29,11 +30,36 @@ int Task2(List<char[]> map, List<char[]> movement){
     return 0;
 }
 
-void SimulateMovePart2(List<char> map, (int y, int x) robotPos, char move){
+(int y, int x) SimulateMovePart2(List<char[]> map, (int y, int x) robotPos, char move){
+    (int y, int x) vector = ConvertMoveToVector(move);
+    (int y, int x) futurePos = (robotPos.y + vector.y, robotPos.x + vector.x);
+    char mapFuturePos = map[futurePos.y][futurePos.x];
+
+    if(mapFuturePos == '.') return futurePos;
+    if(mapFuturePos == '#') return robotPos;
     
+    if(move == '<' || move == '>'){
+        return HorizontalMovement(map, futurePos, vector);
+    }
+    return VerticalMovement(map, futurePos, vector);
 }
 
+(int y, int x) HorizontalMovement(List<char[]> map, (int y, int x) robotPos, (int y, int x) vector){
+    (int y, int x) currentPos = (robotPos.y + vector.y, robotPos.x + vector.x);
+    while(true){
+        char mapChar = map[currentPos.y][currentPos.x];
+        if(mapChar == '#'){
+            return (-1,-1);
+        }
+        else if(mapChar == '.'){
+            
+        }
+    }
+}
 
+(int y, int x) VerticalMovement(List<char[]> map, (int y, int x) robotPos, (int y, int x) vector){
+    return (-1,-1);
+}
 
 List<char[]> ConvertToSecondMap(List<char[]> map){
     List<char[]> convertedMap = new();
