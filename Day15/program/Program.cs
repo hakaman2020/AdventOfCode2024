@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System.Collections;
+using System.Data;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 string inputFilePath = "./example.txt";
@@ -27,6 +29,13 @@ int Task2(List<char[]> map, List<char[]> movement){
     (int y, int x) robotPos = FindRobot(map);
     map[robotPos.y][robotPos.x] = '.';
     PrintMap(map, robotPos);
+    foreach(char[] moves in movement){
+        foreach (char move in moves){
+            robotPos = SimulateMovePart2(map, robotPos, move);
+            Console.WriteLine();
+            PrintMap(map, robotPos);
+        }
+    }
     return 0;
 }
 
@@ -39,27 +48,40 @@ int Task2(List<char[]> map, List<char[]> movement){
     if(mapFuturePos == '#') return robotPos;
     
     if(move == '<' || move == '>'){
-        return HorizontalMovement(map, futurePos, vector);
+        return HorizontalMovement(map, robotPos, vector);
     }
     return VerticalMovement(map, futurePos, vector);
 }
 
 (int y, int x) HorizontalMovement(List<char[]> map, (int y, int x) robotPos, (int y, int x) vector){
-    (int y, int x) currentPos = (robotPos.y + vector.y, robotPos.x + vector.x);
-    while(true){
-        char mapChar = map[currentPos.y][currentPos.x];
-        if(mapChar == '#'){
-            return (-1,-1);
-        }
-        else if(mapChar == '.'){
-            
-        }
+    (int y, int x) futurePos = (robotPos.y + vector.y, robotPos.x + vector.x);
+    char mapChar = map[futurePos.y][futurePos.x];
+    //find the first empty space
+    while(mapChar == '[' || mapChar == ']'){
+        futurePos = (futurePos.y + vector.y, futurePos.x + vector.x);
+        mapChar = map[futurePos.y][futurePos.x];
     }
+    if(mapChar == '#') return robotPos;
+    while(futurePos != robotPos){
+        map[futurePos.y][futurePos.x] = map[futurePos.y - vector.y][futurePos.x - vector.x];
+        futurePos = (futurePos.y - vector.y, futurePos.x - vector.x);
+    }
+    return (robotPos.y + vector.y, robotPos.x + vector.x);
 }
 
 (int y, int x) VerticalMovement(List<char[]> map, (int y, int x) robotPos, (int y, int x) vector){
-    return (-1,-1);
+    (int y, int x) futurePos = (robotPos.y + vector.y, robotPos.x + vector.x);
+    char mapChar = map[futurePos.y][futurePos.x];
+    if(!DidBoxMove(map, futurePos, vector)){
+        return futurePos;
+    }
+    return robotPos;
 }
+
+bool DidBoxMove(List<char[]> map,(int y, int x) robotPos, (int y,int x) vector){
+    return false;
+};
+
 
 List<char[]> ConvertToSecondMap(List<char[]> map){
     List<char[]> convertedMap = new();
