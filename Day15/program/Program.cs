@@ -1,10 +1,5 @@
-﻿using System.Collections;
-using System.Data;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-
-string inputFilePath = "./example.txt";
-// string inputFilePath = "./input.txt";
+﻿// string inputFilePath = "./example.txt";
+string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
 
@@ -25,18 +20,26 @@ int Task1(List<char[]> map, List<char[]> movement){
     return CalculateGPSPart1(map);
 }
 
-int Task2(List<char[]> map, List<char[]> movement){
+long Task2(List<char[]> map, List<char[]> movement){
     (int y, int x) robotPos = FindRobot(map);
     map[robotPos.y][robotPos.x] = '.';
-    PrintMap(map, robotPos);
     foreach(char[] moves in movement){
         foreach (char move in moves){
             robotPos = SimulateMovePart2(map, robotPos, move);
-            Console.WriteLine();
-            PrintMap(map, robotPos);
         }
     }
-    return 0;
+    return CalculateGPSPart2(map);
+}
+
+long CalculateGPSPart2(List<char[]> map){
+    int sumGPS = 0;
+    for(int y = 0; y < map.Count; y++){
+        for(int x = 0; x < map[0].Length; x++){
+            if(map[y][x] == '[')
+                sumGPS += 100 * y + x;
+        }
+    }
+    return sumGPS;
 }
 
 (int y, int x) SimulateMovePart2(List<char[]> map, (int y, int x) robotPos, char move){
@@ -50,7 +53,7 @@ int Task2(List<char[]> map, List<char[]> movement){
     if(move == '<' || move == '>'){
         return HorizontalMovement(map, robotPos, vector);
     }
-    return VerticalMovement(map, futurePos, vector);
+    return VerticalMovement(map, robotPos, vector);
 }
 
 (int y, int x) HorizontalMovement(List<char[]> map, (int y, int x) robotPos, (int y, int x) vector){
@@ -72,16 +75,38 @@ int Task2(List<char[]> map, List<char[]> movement){
 (int y, int x) VerticalMovement(List<char[]> map, (int y, int x) robotPos, (int y, int x) vector){
     (int y, int x) futurePos = (robotPos.y + vector.y, robotPos.x + vector.x);
     char mapChar = map[futurePos.y][futurePos.x];
-    if(!DidBoxMove(map, futurePos, vector)){
+    if(CanBoxMove(map, futurePos, vector)){
+        MoveBoxes(map, futurePos, vector);
         return futurePos;
     }
     return robotPos;
 }
 
-bool DidBoxMove(List<char[]> map,(int y, int x) robotPos, (int y,int x) vector){
+bool CanBoxMove(List<char[]> map,(int y, int x) pos, (int y,int x) vector){
+    char mapChar = map[pos.y][pos.x];
+    if(mapChar == ']') pos = (pos.y, pos.x - 1);
+    char charLeft = map[pos.y + vector.y][pos.x];
+    char charRight = map[pos.y + vector.y][pos.x + 1];
+    if(charLeft == '#' || charRight == '#') return false;
+    if((charLeft == '.' || CanBoxMove(map, (pos.y + vector.y, pos.x + vector.x), vector))
+        && (charRight == '.' || CanBoxMove(map, (pos.y + vector.y, pos.x + 1 + vector.x), vector))){
+        return true;
+    }
     return false;
-};
+}
 
+void MoveBoxes(List<char[]> map, (int y, int x) pos, (int y, int x) vector){
+    char mapChar = map[pos.y][pos.x];
+    if(mapChar == ']') pos = (pos.y, pos.x - 1);
+    char charLeft = map[pos.y + vector.y][pos.x];
+    if(charLeft == ']' || charLeft =='[') MoveBoxes(map, (pos.y + vector.y, pos.x), vector);
+    char charRight = map[pos.y + vector.y][pos.x + 1];
+    if(charRight == ']' || charRight =='[') MoveBoxes(map, (pos.y + vector.y, pos.x + 1), vector);
+    map[pos.y][pos.x] = '.';
+    map[pos.y][pos.x + 1] = '.';
+    map[pos.y + vector.y][pos.x] = '[';
+    map[pos.y + vector.y][pos.x + 1] = ']';
+}
 
 List<char[]> ConvertToSecondMap(List<char[]> map){
     List<char[]> convertedMap = new();
