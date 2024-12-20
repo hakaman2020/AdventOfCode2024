@@ -1,21 +1,58 @@
 ﻿
-// string inputFilePath = "./example.txt";
-string inputFilePath = "./input.txt";
+string inputFilePath = "./example.txt";
+// string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
-
-Console.WriteLine($"Result of Task 1 is {Task1(fileLines)}");
+(Point startPoint, Point endPoint)? result = FindStartAndEndPoint(fileLines);
+if(result == null){
+    Console.WriteLine("Missing start and/or end point");
+}
+HashSet<Point> visited = new();
+Console.WriteLine($"Result of Task 1 is {Task1(fileLines, result!.Value.startPoint, result.Value.endPoint, visited)}");
 Console.WriteLine($"Result of Task 2 is {Task2()}");
-//should implement dijkstra
 
-long Task1(List<string> map)
+//should implement dijkstra
+long Task1(List<string> map, Point startPoint, Point endPoint, HashSet<Point> visited)
 {
-    
+    Dictionary<Point, int> points = new();
+
+    bool done = false;
+    while(!done){
+        //take the lowest non visited vector
+        var nextPoint = FindNextPoint(points, visited);
+        if(nextPoint.Y == -1 && nextPoint.X == -1){
+            done = true;
+            continue;
+        }
+        //get the non-visited neighbours
+        var pointsToEvaluate = PointsToEvaluate(map, visited, nextPoint);
+        
+        //calculate the distance to the neighbour, if that distance is smaller than update that distance
+        foreach(var point in pointsToEvaluate){
+             
+        }       
+        //mark the vector as visited
+        //continue until all vectors are visited
+    } 
 }
 
 int Task2()
 {
     return 0;
+}
+
+Point FindNextPoint(Dictionary<Point,int> points, HashSet<Point> visited){
+    Point lowestValueKey = new Point(-1,-1);
+    int lowestValue = int.MaxValue;
+
+    foreach(var entry in points){
+        if(visited.Contains(entry.Key)) continue;
+        if(lowestValue > entry.Value){
+            lowestValueKey = entry.Key;
+            lowestValue = entry.Value;
+        } 
+    }
+    return lowestValueKey;
 }
 
 List<Point> PointsToEvaluate(List<string> map, HashSet<Point> visited, Point centerPoint)
