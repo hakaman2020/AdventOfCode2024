@@ -1,39 +1,52 @@
 ﻿
-string inputFilePath = "./example.txt";
-// string inputFilePath = "./input.txt";
+// string inputFilePath = "./example.txt";
+string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
 (Point startPoint, Point endPoint)? result = FindStartAndEndPoint(fileLines);
 if(result == null){
     Console.WriteLine("Missing start and/or end point");
+    return;
 }
-HashSet<Point> visited = new();
-Console.WriteLine($"Result of Task 1 is {Task1(fileLines, result!.Value.startPoint, result.Value.endPoint, visited)}");
+Console.WriteLine($"Result of Task 1 is {Task1(fileLines, result!.Value.startPoint, result.Value.endPoint)}");
 Console.WriteLine($"Result of Task 2 is {Task2()}");
 
-//should implement dijkstra
-long Task1(List<string> map, Point startPoint, Point endPoint, HashSet<Point> visited)
+long Task1(List<string> map, Point startPoint, Point endPoint)
 {
-    Dictionary<Point, int> points = new();
-
+    Dictionary<Point, (long distance, Facing facing)> points = new(){{startPoint,(0, Facing.East)}};
+    HashSet<Point> visited = new();
+ 
     bool done = false;
     while(!done){
         //take the lowest non visited vector
         var nextPoint = FindNextPoint(points, visited);
-        if(nextPoint.Y == -1 && nextPoint.X == -1){
+        if(nextPoint.Equals(new Point(-1,-1))){
             done = true;
             continue;
         }
         //get the non-visited neighbours
-        var pointsToEvaluate = PointsToEvaluate(map, visited, nextPoint);
+        List<(Point neighbor, Facing whatSide)> pointsToEvaluate = PointsToEvaluate(map, visited, nextPoint);
         
-        //calculate the distance to the neighbour, if that distance is smaller than update that distance
-        foreach(var point in pointsToEvaluate){
-             
+        //calculate the distance to the neighbour, if that distance is smaller than update that and update facing if needed
+        foreach((Point point, Facing whatSide) neighbor in pointsToEvaluate){
+            (long distance, Facing facing) currentPoint = points[nextPoint];
+            long newDistance = currentPoint.distance + (currentPoint.facing == neighbor.whatSide ? 1 : 1001);
+
+            if(!points.ContainsKey(neighbor.point)){
+                points.Add(neighbor.point,(newDistance,neighbor.whatSide));
+            }
+            else{
+                (long distance, Facing facing) neighbordict = points[neighbor.point];
+                if(newDistance < neighbordict.distance){
+                    points[neighbor.point] = (newDistance, neighbor.whatSide); 
+                }
+            }
         }       
         //mark the vector as visited
+        visited.Add(nextPoint);
         //continue until all vectors are visited
     } 
+    return points[endPoint].distance;
 }
 
 int Task2()
@@ -41,35 +54,36 @@ int Task2()
     return 0;
 }
 
-Point FindNextPoint(Dictionary<Point,int> points, HashSet<Point> visited){
+Point FindNextPoint(Dictionary<Point,(long distance, Facing facing)> points, HashSet<Point> visited){
     Point lowestValueKey = new Point(-1,-1);
-    int lowestValue = int.MaxValue;
+    long lowestValue = long.MaxValue;
 
     foreach(var entry in points){
         if(visited.Contains(entry.Key)) continue;
-        if(lowestValue > entry.Value){
+        if(lowestValue > entry.Value.distance){
             lowestValueKey = entry.Key;
-            lowestValue = entry.Value;
+            lowestValue = entry.Value.distance;
         } 
     }
     return lowestValueKey;
 }
 
-List<Point> PointsToEvaluate(List<string> map, HashSet<Point> visited, Point centerPoint)
+List<(Point, Facing)> PointsToEvaluate(List<string> map, HashSet<Point> visited, Point centerPoint)
 {
     List<(int y, int x)> directions = new(){(-1, 0), (0, -1), (1, 0), (0, 1)};
-    List<Point> pointsToEvaluate = new();
+    List<Facing> directionsEnum = new(){Facing.North, Facing.West, Facing.South, Facing.East};
+    List<(Point, Facing)> pointsToEvaluate = new();
 
-    foreach(var direction in directions)
+    for(int i = 0; i < directions.Count; i++)
     {
-        Point pointToEvaluate = new Point(centerPoint.Y + direction.y, centerPoint.X + direction.x);
+        Point pointToEvaluate = new Point(centerPoint.Y + directions[i].y, centerPoint.X + directions[i].x);
         
         if(visited.Contains(pointToEvaluate)) continue;
         
         char charPos = map[pointToEvaluate.Y][pointToEvaluate.X];
         if(charPos == '.' || charPos == 'E')
         {
-            pointsToEvaluate.Add(pointToEvaluate);
+            pointsToEvaluate.Add((pointToEvaluate, directionsEnum[i]));
         }
     }
     return pointsToEvaluate;
@@ -113,6 +127,12 @@ List<string> ReadFileLines(string inputFile)
     return File.ReadLines(inputFile).ToList();
 }
 
+enum Facing{
+    East,
+    South,
+    West,
+    North
+}
 public class Point
 {
     public Point(int y, int x)
