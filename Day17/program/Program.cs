@@ -1,74 +1,90 @@
 ﻿
-string inputFilePath = "./example.txt";
-//string inputFilePath = "./input.txt";
+// string inputFilePath = "./example.txt";
+string inputFilePath = "./input.txt";
 
 List<string> fileLines = ReadFileLines(inputFilePath);
-(List<long> registers, List<(int opcode, int operand)> instructions) = procesFile(fileLines);
+(List<long> registers, List<int> instructions) = procesFile(fileLines);
 
-Console.WriteLine($"Result of Task 1 is {Task1(registers, instructions)}");
+Console.Write($"Result of Task 1 is ");
+Task1(registers, instructions);
 Console.WriteLine($"Result of Task 2 is {Task2()}");
 
-long Task1(List<long> registers, List<(int opcode, int operand)> instructions)
+long Task1(List<long> registers, List<int> instructions)
 {
-    foreach(var instruction in instructions)
-    {
-        PerformInstruction(registers, instruction);
-    }    
-    return 0;
-}
-
-void PerformInstruction(List<long> registers, (int opcode, int operand) instruction)
-{
-    Action<List<long>, int>[] instructions =
+    Func<List<long>, int,int, int>[] instructionsList =
         [ADVInstruction, BXLInstruction, BSTInstruction, JNZInstruction
             , BXCInstruction, OUTInstruction, BDVInstruction, CDVInstruction];
-    instructions[instruction.opcode](registers, instruction.operand);
-}
 
-long Task2(){
+    int count =0;
+    bool firstOut = true;
+    for(int ip = 0; ip < instructions.Count; ip +=2)
+    {
+        if(instructions[ip] == 5)
+        {
+            if(!firstOut)
+            {
+                Console.Write(",");
+            }
+            firstOut = false;
+        } 
+        ip = instructionsList[instructions[ip]](registers, instructions[ip + 1], ip);
+        count++;
+    }
+    Console.WriteLine();
     return 0;
 }
 
-void ADVInstruction(List<long> registers, int operand)
+long Task2()
 {
-    Console.WriteLine("ADV instruction");
+    return 0;
+}
+
+int ADVInstruction(List<long> registers, int operand,int ip)
+{
     registers[(int)Register.A] = registers[(int)Register.A] / (long) Math.Pow(2, (double) GetValueComboOperand(registers,operand));
+    return ip;
 }
 
-void BXLInstruction(List<long> registers, int operand)
+int BXLInstruction(List<long> registers, int operand, int ip)
 {
-    Console.WriteLine("BXL instruction");
     registers[(int) Register.B] = registers[(int) Register.B] ^ operand;
+    return ip;
 }
 
-void BSTInstruction(List<long> registers, int operand)
+int BSTInstruction(List<long> registers, int operand, int ip)
 {
-    Console.WriteLine("BST instruction");
-    registers[(int) Register.B] = 
+    registers[(int) Register.B] = GetValueComboOperand(registers, operand) % 8;
+    return ip; 
 }
 
-void JNZInstruction(List<long> registers, int operand)
+int JNZInstruction(List<long> registers, int operand, int ip)
 {
-    Console.WriteLine("JNZ instruction");
+    if(registers[(int) Register.A] != 0) return operand - 2;
+    return ip;
 }
 
-void BXCInstruction(List<long> registers, int operand)
+int BXCInstruction(List<long> registers, int operand, int ip)
 {
-    Console.WriteLine("BXC instruction");
+    registers[(int) Register.B] = registers[(int) Register.B] ^ registers[(int) Register.C];
+    return ip;
 }
 
-void OUTInstruction(List<long> registers, int operand)
+int OUTInstruction(List<long> registers, int operand, int ip)
 {
-    Console.WriteLine("OUT instruction");
-}
-void BDVInstruction(List<long> registers, int operand)
-{
-    Console.WriteLine("BDV instruction");
+    Console.Write(GetValueComboOperand(registers,operand) % 8);
+    return ip;
 }
 
-void CDVInstruction(List<long> registers, int operand)
+int BDVInstruction(List<long> registers, int operand, int ip)
 {
-    Console.WriteLine("CDV instruction");
+    registers[(int)Register.B] = registers[(int)Register.A] / (long) Math.Pow(2, (double) GetValueComboOperand(registers,operand));
+    return ip;
+}
+
+int CDVInstruction(List<long> registers, int operand, int ip)
+{
+    registers[(int)Register.C] = registers[(int)Register.A] / (long) Math.Pow(2, (double) GetValueComboOperand(registers,operand));
+    return ip;
 }
 
 long GetValueComboOperand(List<long> registers, int operand)
@@ -83,19 +99,14 @@ long GetValueComboOperand(List<long> registers, int operand)
 }
 
 
-(List<long> registers,List<(int, int)>) procesFile(List<string> fileLines){
+(List<long> registers,List<int>) procesFile(List<string> fileLines){
     List<long> registers = new();
-    List<(int, int)> instructions = new();
+    List<int> instructions = new();
 
     for(int i = 0; i < 3; i++){
         registers.Add(long.Parse(fileLines[i].Split(": ")[1].Trim()));
     }
-
-    var instructionsline = fileLines[4].Split(": ")[1].Split(',');
-    for(int i = 0; i < instructionsline.Count(); i += 2){
-        instructions.Add((int.Parse(instructionsline[i]), int.Parse(instructionsline[i + 1])));
-    }
-
+    instructions = fileLines[4].Split(": ")[1].Split(',').Select(n => int.Parse(n)).ToList();
     return (registers, instructions);
 }
 
